@@ -15,7 +15,7 @@ def signup():
         
         cursor.execute("SELECT user_id FROM users WHERE user_name = %s", (user_name,))
         if cursor.fetchone():
-            print("❌ Username already exists!")
+            print(" Username already exists!")
             return None
         
         user_password = input("Enter your password: ")
@@ -43,13 +43,13 @@ def signup():
         )
         conn.commit()
         
-        print(f"✅ Registration successful! Welcome {user_name}")
-        print(f"✅ Account created with initial balance: ₹{initial_balance}")
+        print(f" Registration successful! Welcome {user_name}")
+        print(f" Account created with initial balance: ₹{initial_balance}")
         
         return user_id
         
     except Error as e:
-        print(f"❌ Registration failed: {e}")
+        print(f" Registration failed: {e}")
         return None
     finally:
         if conn and conn.is_connected():
@@ -76,14 +76,14 @@ def login():
         
         if user_data:
             user_id, username, user_role = user_data
-            print(f"✅ Login successful! Welcome {username}")
+            print(f" Login successful! Welcome {username}")
             return user_id, username, user_role
         else:
-            print("❌ Invalid username or password!")
+            print(" Invalid username or password!")
             return None, None, None
             
     except Error as e:
-        print(f"❌ Login failed: {e}")
+        print(f" Login failed: {e}")
         return None, None, None
     finally:
         if conn and conn.is_connected():
