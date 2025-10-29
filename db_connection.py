@@ -6,14 +6,14 @@ def db_connection():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Rishmitha@143.',
+            password='',
             database='HDFCBANKING'
         )
         if conn.is_connected():
             print("db_connected successfully...")
             return conn
     except Error as e:
-        print(f"❌ Database connection failed: {e}")
+        print(f" Database connection failed: {e}")
         return None
 
 def initialize_database():
@@ -22,14 +22,14 @@ def initialize_database():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Rishmitha@143.'
+            password=''
         )
         cursor = conn.cursor()
         
         cursor.execute("CREATE DATABASE IF NOT EXISTS HDFCBANKING")
         cursor.execute("USE HDFCBANKING")
         
-        # Create users table
+        
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 user_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -40,7 +40,7 @@ def initialize_database():
             )
         """)
         
-        # Create accounts table
+        
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS accounts (
                 account_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -52,7 +52,7 @@ def initialize_database():
             )
         """)
         
-        # DROP and RECREATE requests table with CORRECTED ENUM values
+        
         cursor.execute("DROP TABLE IF EXISTS requests")
         
         cursor.execute("""
@@ -67,24 +67,24 @@ def initialize_database():
             )
         """)
         
-        # Create admin user
+        
         cursor.execute("SELECT * FROM users WHERE user_name = 'Malleshyadav'")
         if not cursor.fetchone():
             cursor.execute(
                 "INSERT INTO users (user_name, user_password, user_role) VALUES (%s, %s, %s)",
                 ('Malleshyadav', '123456', 'admin')
             )
-            print("✅ Admin user 'Malleshyadav' created!")
+            print(" Admin user 'Malleshyadav' created!")
         
         conn.commit()
-        print("✅ HDFCBANKING database initialized successfully!")
+        print(" HDFCBANKING database initialized successfully!")
         
     except Error as e:
-        print(f"❌ Database initialization failed: {e}")
+        print(f" Database initialization failed: {e}")
     finally:
         if conn and conn.is_connected():
             cursor.close()
             conn.close()
 
-# Initialize database when this module is imported
+
 initialize_database()
