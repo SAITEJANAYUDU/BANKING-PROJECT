@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS requests (
     
     USE HDFCBANKING;
 
--- Drop and recreate the requests table with correct ENUM values
 DROP TABLE IF EXISTS requests;
 
 CREATE TABLE requests (
@@ -60,7 +59,6 @@ CREATE TABLE requests (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- Verify the table was created
 DESCRIBE requests;
 
 
