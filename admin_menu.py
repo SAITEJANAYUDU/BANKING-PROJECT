@@ -5,10 +5,10 @@ from mysql.connector import Error
 def admin_dashboard():
     while True:
         print("\n=== ADMIN DASHBOARD ===")
-        print("1. 👥 View All Users")
-        print("2. 📊 View All Accounts")
-        print("3. 📝 Manage Service Requests")
-        print("4. 🚪 Logout")
+        print("1. View All Users")
+        print("2. View All Accounts")
+        print("3. Manage Service Requests")
+        print("4. Logout")
         
         choice = input("Choose an option (1-4): ")
         
@@ -19,10 +19,10 @@ def admin_dashboard():
         elif choice == '3':
             manage_requests()
         elif choice == '4':
-            print("👋 Logging out...")
+            print("Logging out...")
             break
         else:
-            print("❌ Invalid option!")
+            print("Invalid option!")
 
 def view_all_users():
     try:
@@ -40,7 +40,7 @@ def view_all_users():
         print(f"Total Users: {len(users)}")
         
     except Error as e:
-        print(f"❌ Error: {e}")
+        print(f" Error: {e}")
     finally:
         if conn and conn.is_connected():
             cursor.close()
@@ -66,7 +66,7 @@ def view_all_accounts():
         print(f"Total Accounts: {len(accounts)}")
         
     except Error as e:
-        print(f"❌ Error: {e}")
+        print(f" Error: {e}")
     finally:
         if conn and conn.is_connected():
             cursor.close()
@@ -100,7 +100,6 @@ def manage_requests():
         if req_id:
             req_id = int(req_id)
             
-            # Find the specific request with proper join to get username
             cursor.execute("""
                 SELECT r.req_type, r.user_id, u.user_name, r.req_status
                 FROM requests r 
@@ -110,78 +109,71 @@ def manage_requests():
             request_details = cursor.fetchone()
             
             if not request_details:
-                print("❌ Request ID not found!")
+                print("Request ID not found!")
                 return
                 
             req_type, req_user_id, username, current_status = request_details
             
-            print(f"\n📋 Request Details:")
+            print(f"\n Request Details:")
             print(f"User: {username} (ID: {req_user_id})")
             print(f"Request Type: {req_type}")
             print(f"Current Status: {current_status}")
             
-            print("\n1. ✅ Approve")
-            print("2. ❌ Reject")
-            print("3. ⏳ Keep Pending")
+            print("\n1. Approve")
+            print("2. Reject")
+            print("3. Keep Pending")
             action = input("Choose action (1-3): ")
             
             status_map = {'1': 'Approved', '2': 'Rejected', '3': 'Pending'}
             if action in status_map:
                 new_status = status_map[action]
                 
-                # If approving a Delete Account request, actually delete the account
                 if action == '1' and req_type == 'Delete Account':
-                    confirm = input(f"⚠️  WARNING: This will PERMANENTLY delete {username}'s account and ALL data! Confirm? (yes/no): ").lower()
+                    confirm = input(f" WARNING: This will PERMANENTLY delete {username}'s account and ALL data! Confirm? (yes/no): ").lower()
                     if confirm == 'yes':
                         try:
-                            print("🔄 Starting account deletion process...")
+                            print("Starting account deletion process...")
                             
-                            # First, check if user still exists
+                            # First, check if user still exist
                             cursor.execute("SELECT user_id FROM users WHERE user_id = %s", (req_user_id,))
                             user_exists = cursor.fetchone()
                             
                             if not user_exists:
-                                print("❌ User no longer exists!")
+                                print("User no longer exists!")
                                 return
                             
-                            # Get account info before deletion
+                            
                             cursor.execute("SELECT account_balance FROM accounts WHERE user_id = %s", (req_user_id,))
                             account_info = cursor.fetchone()
                             balance = account_info[0] if account_info else 0
                             
-                            print(f"🗑️  Deleting account for {username} (Balance: ₹{balance})...")
+                            print(f" Deleting account for {username} (Balance: ₹{balance})...")
                             
-                            # First, delete all requests for this user
+                            # First, delete all requests for this use
                             cursor.execute("DELETE FROM requests WHERE user_id = %s", (req_user_id,))
-                            print(f"✅ Deleted all service requests for {username}")
+                            print(f" Deleted all service requests for {username}")
                             
-                            # Then, delete the account
                             cursor.execute("DELETE FROM accounts WHERE user_id = %s", (req_user_id,))
-                            print(f"✅ Deleted bank account for {username}")
+                            print(f" Deleted bank account for {username}")
                             
-                            # Finally, delete the user
                             cursor.execute("DELETE FROM users WHERE user_id = %s", (req_user_id,))
-                            print(f"✅ Deleted user {username}")
+                            print(f" Deleted user {username}")
                             
-                            # Commit all changes
                             conn.commit()
-                            print(f"🎉 Account for {username} has been PERMANENTLY deleted!")
+                            print(f" Account for {username} has been PERMANENTLY deleted!")
                             
                         except Error as e:
-                            # Rollback in case of error
                             conn.rollback()
-                            print(f"❌ Error during deletion: {e}")
-                            print("🔁 Rolling back changes...")
+                            print(f" Error during deletion: {e}")
+                            print(" Rolling back changes...")
                             
                 else:
-                    # For other request types (Loan, ATM Card, Cheque Book), just update status
-                    # Also for Delete Account when rejecting or keeping pending
                     cursor.execute(
                         "UPDATE requests SET req_status = %s WHERE req_id = %s",
                         (new_status, req_id)
                     )
                     conn.commit()
-                    print(f"✅ Request {req_id} updated to: {new_status}")
+                    print(f" Request {req_id} updated to: {new_status}")
         
     except Error as e:
         print(f"❌ Error: {e}")
