@@ -1,12 +1,12 @@
 # main.py
 from db_connection import initialize_database
-from authentication import signup, login  # Fixed typo: 'authentication' not 'authencation'
-from customer_menu import customer_dashboard    # Fixed: 'customer' not 'customer_menu'
+from authentication import signup, login
+from customer_menu import customer_dashboard
 from admin_menu import admin_dashboard
 
 def main():
     print("🚀 Starting HDFC Banking System...")
-    initialize_database()  # Initialize database at startup
+    initialize_database()
     
     while True:
         print("\n" + "="*50)
