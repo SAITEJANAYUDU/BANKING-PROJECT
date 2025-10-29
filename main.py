@@ -1,4 +1,3 @@
-# main.py
 from db_connection import initialize_database
 from authentication import signup, login
 from customer_menu import customer_dashboard
